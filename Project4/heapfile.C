@@ -329,7 +329,7 @@ const Status HeapFileScan::resetScan()
  * PURPOSE:  To find and return the next record that matches the filter.
  *
  * PARAMETERS:
- *		outRid 	(in)	Record ID of the next matching record
+ *		outRid 	(out)	Record ID of the next matching record
  *
  * RETURN VALUES:
  * 		status	OK 				Next matching record was successfully returned
@@ -511,7 +511,7 @@ InsertFileScan::~InsertFileScan()
  *
  * PARAMETERS:
  *		rec		(in)	Record structure
- *		outRid 	(in)	Record ID of the inserted record
+ *		outRid 	(out)	Record ID of the inserted record
  *
  * RETURN VALUES:
  * 		status	OK 				Record was retrieved inserted

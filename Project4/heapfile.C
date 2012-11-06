@@ -165,6 +165,7 @@ const Status HeapFile::getRecord(const RID & rid, Record & rec)
     // cout<< "getRecord. record (" << rid.pageNo << "." << rid.slotNo << ")" << endl;
 	if(rid.pageNo != curPageNo)
 	{
+		cout << "yo" << endl;
 		status = bufMgr->unPinPage(filePtr, curPageNo, curDirtyFlag);
 		if(status != OK)
 			return status;
@@ -466,12 +467,12 @@ const Status InsertFileScan::insertRecord(const Record & rec, RID& outRid)
 	
 	curPageNo = headerPage->lastPage;
 	//2. Check free space.
-	cout << rec.length << " " << curPage->getFreeSpace() << endl;
+	//cout << rec.length << " " << curPage->getFreeSpace() << endl;
 	if (rec.length > curPage->getFreeSpace())
 	{
 		//3. If insufficient, allocate new page, make that current page, update FileHdrPage (last, PageCnt), make it current page.
-		cout << "CurPage = " << curPageNo << endl;
-		cout << "CurPagePointer = " << curPage << endl;
+		//cout << "CurPage = " << curPageNo << endl;
+		//cout << "CurPagePointer = " << curPage << endl;
 		status = bufMgr->unPinPage(filePtr, curPageNo, curDirtyFlag);
 		if (status != OK)
 			return status;
@@ -484,8 +485,8 @@ const Status InsertFileScan::insertRecord(const Record & rec, RID& outRid)
 		{
 			return status;
 		}
-		cout << "CurPage = " << curPageNo << endl;
-		cout << "CurPagePointer = " << curPage << endl;
+		//cout << "CurPage = " << curPageNo << endl;
+		//cout << "CurPagePointer = " << curPage << endl;
 		headerPage->pageCnt += 1;
 		headerPage->lastPage = curPageNo;
 		hdrDirtyFlag = true;

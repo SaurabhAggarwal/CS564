@@ -182,14 +182,15 @@ const int HeapFile::getRecCnt() const
 /**
  * FUNCTION: getRecord
  *
- * PURPOSE:  To initialize HeapFile instance and open the underlying file.
+ * PURPOSE:  To retrieve a record (via the rec structure) given the RID of the record.
  *
  * PARAMETERS:
- *		rid 	(in)	File name for the heap file
+ *		rid 	(in)	Record ID of the record we want to retrieve
+ *		rec		(in)	Record structure
  *
- * 		returnStatus	(out)	Status to be returned
- *				OK 				Underlying file was opened and the heap file initialized successfully
- *				UNIXERR 		Unix error occurred while opening the file or reading a page
+ * RETURN VALUES:
+ * 		status	OK 				Record was retrieved successfully
+ *				UNIXERR 		Unix error occurred while reading a page
  *				BUFFEREXCEEDED  All buffer frames are pinned
  *				HASHTBLERROR	Hash table error occurred
  *				PAGENOTPINNED 	Pin count is already 0
@@ -205,24 +206,32 @@ const Status HeapFile::getRecord(const RID & rid, Record & rec)
     Status status;	
 	
     // cout<< "getRecord. record (" << rid.pageNo << "." << rid.slotNo << ")" << endl;
+    
+    // If the current page is not the page we want
 	if(rid.pageNo != curPageNo)
 	{
+		// Unpin the current page so that it can be flushed to disk
 		status = bufMgr->unPinPage(filePtr, curPageNo, curDirtyFlag);
 		if(status != OK)
 			return status;
 		curDirtyFlag = false;
 		curPage = NULL;
-		
+	
+		// Read the required page in buffer pool	
 		status = bufMgr->readPage(filePtr, rid.pageNo, curPage);
 		if(status != OK)
 			return status;
 		
+		// Update the current page number
 		curPageNo = rid.pageNo;
 	}
 	
+	// Retrieve record
 	status = curPage->getRecord(rid, rec);
 	if(status != OK)
 		return status;
+	
+	// Set curRec
 	curRec = rid;
 	
 	return status;

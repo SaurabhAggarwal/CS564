@@ -114,12 +114,10 @@ int main(int argc, char **argv)
 			status = file1->getRecord(ridArray[i], dbrec2);
     	    if (status != OK) error.print(status);
 
-			//RECORD *temp = (RECORD *)dbrec2.data;
-			//cout << temp << endl;
-			//cout << rec1 << endl;
+
 			// compare with what we should get back
 			if (memcmp(&rec1, dbrec2.data, sizeof(RECORD)) != 0) 
-			    cout << "first err0r reading record " << i << " back" << endl;
+			    cout << "err0r reading record " << i << " back" << endl;
 		}
 		cout << "getRecord() tests passed successfully" << endl;
     }
@@ -143,7 +141,7 @@ int main(int argc, char **argv)
     	    status = scan1->getRecord(dbrec2);
     	    if (status != OK) break;
 			if (memcmp(&rec1, dbrec2.data, sizeof(RECORD)) != 0)
-                cout << "doosri err0r reading record " << i << " back" << endl;
+                cout << "err0r reading record " << i << " back" << endl;
     	    i++;
 		}
 		if (status != FILEEOF) error.print(status);

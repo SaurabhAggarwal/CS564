@@ -59,13 +59,8 @@ const Status Page::insertRecord(const Record & rec, RID& rid)
     // Start by checking if sufficient space exists
     // This is an upper bound check. may not actually need a slot
     // if we can find an empty one
-    if (spaceNeeded > freeSpace)
-    {
-    	cout << "spaceNeeded = " << spaceNeeded << endl;
-    	cout << "freeSpace = " << freeSpace << endl;
-    	return NOSPACE;
-	}
-	else
+    if (spaceNeeded > freeSpace) return NOSPACE;
+    else
     {
         int i=0;
     	// look for an empty slot

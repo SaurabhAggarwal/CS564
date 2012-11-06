@@ -102,22 +102,23 @@ const Status destroyHeapFile(const string fileName)
  **/
 HeapFile::HeapFile(const string & fileName, Status& returnStatus)
 {
-    Status 	status;
     Page*	pagePtr;
 
     cout << "opening file " << fileName << endl;
 
     // open the file and read in the header page and the first data page
-    if ((status = db.openFile(fileName, filePtr)) == OK)
+    if ((returnStatus = db.openFile(fileName, filePtr)) == OK)
     {
 	    // Setting headerPageNo
-		status = filePtr->getFirstPage(headerPageNo);
+		returnStatus = filePtr->getFirstPage(headerPageNo);
+		if(returnStatus != OK)
+			return;
 		
 		// Setting hdrDirtyFlag
 		hdrDirtyFlag = false;
 		
 		// Read the Header Page 
-		if((status = bufMgr->readPage(filePtr, headerPageNo, pagePtr)) != OK)
+		if((returnStatus = bufMgr->readPage(filePtr, headerPageNo, pagePtr)) != OK)
 			return;
 		
 		// Setting FileHdrPage
@@ -125,7 +126,7 @@ HeapFile::HeapFile(const string & fileName, Status& returnStatus)
     		
 		// Read the First Data page (next to Header Page) and set it as current page
 		curPageNo = headerPage->firstPage;
-		if((status = bufMgr->readPage(filePtr, curPageNo, curPage)) != OK)
+		if((returnStatus = bufMgr->readPage(filePtr, curPageNo, curPage)) != OK)
 			return;
 		
 		// Setting curDirtyFlag and curRec
@@ -135,7 +136,6 @@ HeapFile::HeapFile(const string & fileName, Status& returnStatus)
     else
     {
     	cerr << "open of heap file failed\n";
-		returnStatus = status;
 		return;
     }
 }
@@ -323,6 +323,22 @@ const Status HeapFileScan::resetScan()
     return OK;
 }
 
+/**
+ * FUNCTION: HeapFileScan::scanNext
+ *
+ * PURPOSE:  To find and return the next record that matches the filter.
+ *
+ * PARAMETERS:
+ *		outRid 	(in)	Record ID of the next matching record
+ *
+ * RETURN VALUES:
+ * 		status	OK 				Next matching record was successfully returned
+ *				FILEEOF 		Reached the end of file while scanning for the record
+ *				BUFFEREXCEEDED  All buffer frames are pinned
+ *				HASHTBLERROR	Hash table error occurred
+ *				PAGENOTPINNED 	Pin count is already 0
+ *				HASHNOTFOUND  	Page is not in the buffer pool hash table
+ **/
 
 const Status HeapFileScan::scanNext(RID& outRid)
 {
@@ -344,7 +360,7 @@ const Status HeapFileScan::scanNext(RID& outRid)
 	    	status = curPage->nextRecord(curRec, tmpRid);
     	}
     	
-    	while(status == ENDOFPAGE)	//Reached the last record on that page, move onto next page. //how are pages' linked list connected ?
+    	while(status == ENDOFPAGE)	//Reached the last record on that page, move onto next page.
     	{
     		//Was already on last page, so no more records found.
     		if(headerPage->lastPage == curPageNo)
@@ -488,21 +504,38 @@ InsertFileScan::~InsertFileScan()
     }
 }
 
-// Insert a record into the file
+/**
+ * FUNCTION: InsertFileScan::insertRecord
+ *
+ * PURPOSE:  To insert the given record into the file and return the RID in the outRid parameter.
+ *
+ * PARAMETERS:
+ *		rec		(in)	Record structure
+ *		outRid 	(in)	Record ID of the inserted record
+ *
+ * RETURN VALUES:
+ * 		status	OK 				Record was retrieved inserted
+ *				INVALIDRECLEN 	Record length was larger than page capacity
+ *				BUFFEREXCEEDED  All buffer frames are pinned
+ *				HASHTBLERROR	Hash table error occurred
+ *				PAGENOTPINNED 	Pin count is already 0
+ *				HASHNOTFOUND  	Page is not in the buffer pool hash table
+ *				NOSPACE		  	No space to insert record, even on a new page
+ **/
 const Status InsertFileScan::insertRecord(const Record & rec, RID& outRid)
 {
     Status	status, unpinstatus;
     Page *newPage;
     int newPageNo;
     
-    // check for very large records
+    //Check for very large records
     if ((unsigned int) rec.length > PAGESIZE-DPFIXED)
     {
-        // will never fit on a page, so don't even bother looking
+        //Will never fit on a page, so don't even bother looking
         return INVALIDRECLEN;
     }
 	
-	//1. Make last page as current page
+	//Make last page as current page
 	unpinstatus = bufMgr->unPinPage(filePtr, curPageNo, curDirtyFlag);
 	if((unpinstatus != OK) && (unpinstatus != PAGENOTPINNED))
 	{
@@ -513,15 +546,16 @@ const Status InsertFileScan::insertRecord(const Record & rec, RID& outRid)
 	curDirtyFlag = false;
 	status = bufMgr->readPage(filePtr, headerPage->lastPage, curPage);
 	if(status != OK)
-	{
 		return status;
-	}
 	
 	curPageNo = headerPage->lastPage;
-	//2. Check free space.
-	if (rec.length > curPage->getFreeSpace())
+	
+	//Attempt to insert record.
+	status = curPage->insertRecord(rec, outRid);
+	
+	if(status == NOSPACE)
 	{
-		//3. If insufficient, allocate new page, make that current page, update FileHdrPage (last, PageCnt), make it current page.
+		//If insufficient, allocate new page, make that current page, update FileHdrPage (last, PageCnt), make it current page.
 		status = bufMgr->allocPage(filePtr, newPageNo, newPage);
 		newPage->init(newPageNo);
 		if(status != OK)
@@ -536,18 +570,16 @@ const Status InsertFileScan::insertRecord(const Record & rec, RID& outRid)
 		curDirtyFlag = false;
 		curPage = newPage;
 		curPageNo = newPageNo;
+		status = curPage->insertRecord(rec, outRid);
+		if(status != OK)
+			return status;
 		
 		headerPage->pageCnt += 1;
 		headerPage->lastPage = curPageNo;
 		hdrDirtyFlag = true;
 	}
 	
-	//4. Now insert, add 1 to record count.
-	status = curPage->insertRecord(rec, outRid);
 	curDirtyFlag = true;
-	
-	if(status != OK)
-		return status;
 	
 	headerPage->recCnt += 1;
 	curRec = outRid;

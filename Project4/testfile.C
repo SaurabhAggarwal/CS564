@@ -119,7 +119,7 @@ int main(int argc, char **argv)
 			//cout << rec1 << endl;
 			// compare with what we should get back
 			if (memcmp(&rec1, dbrec2.data, sizeof(RECORD)) != 0) 
-			    cout << "err0r reading record " << i << " back" << endl;
+			    cout << "first err0r reading record " << i << " back" << endl;
 		}
 		cout << "getRecord() tests passed successfully" << endl;
     }

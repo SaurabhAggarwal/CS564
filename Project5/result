@@ -1,0 +1,537 @@
+running test # 1 ****************
+Database testdb created
+Welcome to Minirel
+    Using Nested Loops Join Method
+
+>>> Enter y if you want to delete testdb/*
+Executing rm -r testdb
+running test # 10 ****************
+Database testdb created
+Welcome to Minirel
+    Using Nested Loops Join Method
+
+>>> create soaps (soapid = int, sname = char(28), network = char(4), rating = real);
+Creating relation soaps
+
+>>> create stars (starid = int, stname = char(20), plays = char(12), soapid = int);
+Creating relation stars
+
+>>> destroy soaps;
+
+>>> destroy stars;
+
+>>> create soaps (soapid = int, sname = char(28), network = char(4), rating = real);
+Creating relation soaps
+
+>>> create stars (starid = int, stname = char(20), plays = char(12), soapid = int);
+Creating relation stars
+
+>>> Enter y if you want to delete testdb/*
+Executing rm -r testdb
+running test # 2 ****************
+Database testdb created
+Welcome to Minirel
+    Using Nested Loops Join Method
+
+>>> help;
+Relation name: relcat
+
+relName              attrCnt 
+--------------------  -------  
+relcat                2        
+attrcat               5        
+
+Number of records: 2
+
+>>> Enter y if you want to delete testdb/*
+Executing rm -r testdb
+running test # 3 ****************
+Database testdb created
+Welcome to Minirel
+    Using Nested Loops Join Method
+
+>>> create easy (myattr = char(24));
+Creating relation easy
+
+>>> attrcat
+easy
+relcat
+ls
+
+>>> help easy;
+Relation name: easy (1 attributes)
+  Attribute name   Off   T   Len   I
+
+          myattr     0   s    24
+
+>>> create easier (one = char(24), two = int, three = real, four = char(100));
+Creating relation easier
+
+>>> attrcat
+easier
+easy
+relcat
+ls
+
+>>> help easier;
+Relation name: easier (4 attributes)
+  Attribute name   Off   T   Len   I
+
+             one     0   s    24
+             two    24   i     4
+           three    28   f     4
+            four    32   s   100
+
+>>> help;
+Relation name: relcat
+
+relName              attrCnt 
+--------------------  -------  
+relcat                2        
+attrcat               5        
+easy                  1        
+easier                4        
+
+Number of records: 4
+
+>>> Enter y if you want to delete testdb/*
+Executing rm -r testdb
+running test # 4 ****************
+Database testdb created
+Welcome to Minirel
+    Using Nested Loops Join Method
+
+>>> create soaps (soapid = int, sname = char(28), network = char(4), rating = real);
+Creating relation soaps
+
+>>> create stars (starid = int, stname = char(20), plays = char(12), soapid = int);
+Creating relation stars
+
+>>> help soaps;
+Relation name: soaps (4 attributes)
+  Attribute name   Off   T   Len   I
+
+          soapid     0   i     4
+           sname     4   s    28
+         network    32   s     4
+          rating    36   f     4
+
+>>> help stars;
+Relation name: stars (4 attributes)
+  Attribute name   Off   T   Len   I
+
+          starid     0   i     4
+          stname     4   s    20
+           plays    24   s    12
+          soapid    36   i     4
+
+>>> destroy stars;
+
+>>> help;
+Relation name: relcat
+
+relName              attrCnt 
+--------------------  -------  
+relcat                2        
+attrcat               5        
+soaps                 4        
+
+Number of records: 3
+
+>>> destroy soaps;
+
+>>> help;
+Relation name: relcat
+
+relName              attrCnt 
+--------------------  -------  
+relcat                2        
+attrcat               5        
+
+Number of records: 2
+
+>>> attrcat
+relcat
+ls
+
+>>> Enter y if you want to delete testdb/*
+Executing rm -r testdb
+running test # 5 ****************
+Database testdb created
+Welcome to Minirel
+    Using Nested Loops Join Method
+
+>>> create soaps (soapid = int, sname = char(28), network = char(4), rating = real);
+Creating relation soaps
+
+>>> create stars (starid = int, stname = char(20), plays = char(12), soapid = int);
+Creating relation stars
+
+>>> help soaps;
+Relation name: soaps (4 attributes)
+  Attribute name   Off   T   Len   I
+
+          soapid     0   i     4
+           sname     4   s    28
+         network    32   s     4
+          rating    36   f     4
+
+>>> help stars;
+Relation name: stars (4 attributes)
+  Attribute name   Off   T   Len   I
+
+          starid     0   i     4
+          stname     4   s    20
+           plays    24   s    12
+          soapid    36   i     4
+
+>>> help;
+Relation name: relcat
+
+relName              attrCnt 
+--------------------  -------  
+relcat                2        
+attrcat               5        
+soaps                 4        
+stars                 4        
+
+Number of records: 4
+
+>>> Enter y if you want to delete testdb/*
+Executing rm -r testdb
+running test # 6 ****************
+Database testdb created
+Welcome to Minirel
+    Using Nested Loops Join Method
+
+>>> create soaps (soapid = int, sname = char(28), network = char(4), rating = real);
+Creating relation soaps
+
+>>> create stars (starid = int, stname = char(20), plays = char(12), soapid = int);
+Creating relation stars
+
+>>> load soaps("../data/soaps.data");
+Number of records inserted: 9
+
+>>> print soaps;
+Relation name: soaps
+
+soapid sname                network rating 
+------  --------------------  -------  ------  
+0       Days of Our Lives     NBC      7.02    
+1       General Hospital      ABC      9.81    
+2       Guiding Light         CBS      4.02    
+3       One Life to Live      ABC      2.31    
+4       Santa Barbara         NBC      6.44    
+5       The Young and the Re  CBS      5.50    
+6       As the World Turns    CBS      7.00    
+7       Another World         NBC      1.97    
+8       All My Children       ABC      8.82    
+
+Number of records: 9
+
+>>> load stars("../data/stars.data");
+Number of records inserted: 29
+
+>>> print stars;
+Relation name: stars
+
+starid stname               plays        soapid 
+------  --------------------  ------------  ------  
+0       Hayes, Kathryn        Kim           6       
+1       DeFreitas, Scott      Andy          6       
+2       Grahn, Nancy          Julia         4       
+3       Linder, Kate          Esther        5       
+4       Cooper, Jeanne        Katherine     5       
+5       Ehlers, Beth          Harley        2       
+6       Novak, John           Keith         4       
+7       Elliot, Patricia      Renee         3       
+8       Hutchinson, Fiona     Gabrielle     5       
+9       Carey, Phil           Asa           5       
+10      Walker, Nicholas      Max           3       
+11      Ross, Charlotte       Eve           0       
+12      Anthony, Eugene       Stan          8       
+13      Douglas, Jerry        John          5       
+14      Holbrook, Anna        Sharlene      7       
+15      Hammer, Jay           Fletcher      2       
+16      Sloan, Tina           Lillian       2       
+17      DuClos, Danielle      Lisa          3       
+18      Tuck, Jessica         Megan         3       
+19      Ashford, Matthew      Jack          0       
+20      Novak, John           Keith         4       
+21      Larson, Jill          Opal          8       
+22      McKinnon, Mary        Denise        7       
+23      Barr, Julia           Brooke        8       
+24      Borlenghi, Matt       Brian         8       
+25      Hughes, Finola        Anna          1       
+26      Rogers, Tristan       Robert        1       
+27      Richardson, Cheryl    Jenny         1       
+28      Evans, Mary Beth      Kayla         0       
+
+Number of records: 29
+
+>>> help soaps;
+Relation name: soaps (4 attributes)
+  Attribute name   Off   T   Len   I
+
+          soapid     0   i     4
+           sname     4   s    28
+         network    32   s     4
+          rating    36   f     4
+
+>>> help stars;
+Relation name: stars (4 attributes)
+  Attribute name   Off   T   Len   I
+
+          starid     0   i     4
+          stname     4   s    20
+           plays    24   s    12
+          soapid    36   i     4
+
+>>> Enter y if you want to delete testdb/*
+Executing rm -r testdb
+running test # 7 ****************
+Database testdb created
+Welcome to Minirel
+    Using Nested Loops Join Method
+
+>>> create ned (ted = char(24), ted = int);
+Error: duplicate attribute names
+
+>>> create ned (ted = char(24), jed = int);
+Creating relation ned
+
+>>> create ned (ted = char(24), jed = int);
+Error: relation exists already
+
+>>> create red (ted = char(254), jed = char(254), red = char(254), ed = char(254), fred = char(254), ned = char(254), aed = char(254), bed = char(254), ced = char(254), ded = char(254), eed = char(254), fed = char(254), ged = char(254), hed = char(254), ied = char(254), ked = char(254), led = char(254));
+Error: attributes too long
+
+>>> destroy jed;
+Error: relation not in catalog
+
+>>> destroy ned;
+
+>>> destroy ned;
+Error: relation not in catalog
+
+>>> create ned (ted = char(24), jed = int);
+Creating relation ned
+
+>>> print jed;
+Error: relation not in catalog
+
+>>> load ned("no-such-file");
+Error: Unix errorUnix error: No such file or directory
+
+
+>>> load ed("../data/soaps.data");
+Error: relation not in catalog
+
+>>> help jed;
+Error: relation not in catalog
+
+>>> help;
+Relation name: relcat
+
+relName              attrCnt 
+--------------------  -------  
+relcat                2        
+attrcat               5        
+ned                   2        
+
+Number of records: 3
+
+>>> help ned;
+Relation name: ned (2 attributes)
+  Attribute name   Off   T   Len   I
+
+             ted     0   s    24
+             jed    24   i     4
+
+>>> attrcat
+ned
+relcat
+ls
+
+>>> Enter y if you want to delete testdb/*
+Executing rm -r testdb
+running test # 7~ ****************
+Database testdb created
+Welcome to Minirel
+    Using Nested Loops Join Method
+
+>>> create ned (ted = char(24), ted = int);
+Error: duplicate attribute names
+
+>>> create ned (ted = char(24), jed = int);
+Creating relation ned
+
+>>> create ned (ted = char(24), jed = int);
+Error: relation exists already
+
+>>> create red (ted = char(200), jed = char(200), red = char(200), ed = char(200), fred = char(200), ned = char(200));
+Creating relation red
+
+>>> destroy jed;
+Error: relation not in catalog
+
+>>> destroy ned;
+
+>>> destroy ned;
+Error: relation not in catalog
+
+>>> create ned (ted = char(24), jed = int);
+Creating relation ned
+
+>>> print jed;
+Error: relation not in catalog
+
+>>> load ned("no-such-file");
+Error: Unix errorUnix error: No such file or directory
+
+
+>>> load ed("../data/soaps.data");
+Error: relation not in catalog
+
+>>> help jed;
+Error: relation not in catalog
+
+>>> help;
+Relation name: relcat
+
+relName              attrCnt 
+--------------------  -------  
+relcat                2        
+attrcat               5        
+ned                   2        
+red                   6        
+
+Number of records: 4
+
+>>> help ned;
+Relation name: ned (2 attributes)
+  Attribute name   Off   T   Len   I
+
+             ted     0   s    24
+             jed    24   i     4
+
+>>> attrcat
+ned
+red
+relcat
+ls
+
+>>> Enter y if you want to delete testdb/*
+Executing rm -r testdb
+running test # 8 ****************
+Database testdb created
+Welcome to Minirel
+    Using Nested Loops Join Method
+
+>>> create soaps (s = int, d = char(20));
+Creating relation soaps
+
+>>> create soaps1 (s = int, d = char(20));
+Creating relation soaps1
+
+>>> create soaps2 (s = int, d = char(20));
+Creating relation soaps2
+
+>>> create soaps3 (s = int, d = char(20));
+Creating relation soaps3
+
+>>> create soaps4 (s = int, d = char(20));
+Creating relation soaps4
+
+>>> destroy relcat;
+Error: bad catalog parameter
+
+>>> destroy attrcat;
+Error: bad catalog parameter
+
+>>> help;
+Relation name: relcat
+
+relName              attrCnt 
+--------------------  -------  
+relcat                2        
+attrcat               5        
+soaps                 2        
+soaps1                2        
+soaps2                2        
+soaps3                2        
+soaps4                2        
+
+Number of records: 7
+
+>>> Enter y if you want to delete testdb/*
+Executing rm -r testdb
+running test # 9 ****************
+Database testdb created
+Welcome to Minirel
+    Using Nested Loops Join Method
+
+>>> create dummy (s = int, d = char(20), f = char(12), g = int);
+Creating relation dummy
+
+>>> help dummy;
+Relation name: dummy (4 attributes)
+  Attribute name   Off   T   Len   I
+
+               s     0   i     4
+               d     4   s    20
+               f    24   s    12
+               g    36   i     4
+
+>>> load dummy("../data/stars.data");
+Number of records inserted: 29
+
+>>> print dummy;
+Relation name: dummy
+
+s     d                    f            g     
+-----  --------------------  ------------  -----  
+0      Hayes, Kathryn        Kim           6      
+1      DeFreitas, Scott      Andy          6      
+2      Grahn, Nancy          Julia         4      
+3      Linder, Kate          Esther        5      
+4      Cooper, Jeanne        Katherine     5      
+5      Ehlers, Beth          Harley        2      
+6      Novak, John           Keith         4      
+7      Elliot, Patricia      Renee         3      
+8      Hutchinson, Fiona     Gabrielle     5      
+9      Carey, Phil           Asa           5      
+10     Walker, Nicholas      Max           3      
+11     Ross, Charlotte       Eve           0      
+12     Anthony, Eugene       Stan          8      
+13     Douglas, Jerry        John          5      
+14     Holbrook, Anna        Sharlene      7      
+15     Hammer, Jay           Fletcher      2      
+16     Sloan, Tina           Lillian       2      
+17     DuClos, Danielle      Lisa          3      
+18     Tuck, Jessica         Megan         3      
+19     Ashford, Matthew      Jack          0      
+20     Novak, John           Keith         4      
+21     Larson, Jill          Opal          8      
+22     McKinnon, Mary        Denise        7      
+23     Barr, Julia           Brooke        8      
+24     Borlenghi, Matt       Brian         8      
+25     Hughes, Finola        Anna          1      
+26     Rogers, Tristan       Robert        1      
+27     Richardson, Cheryl    Jenny         1      
+28     Evans, Mary Beth      Kayla         0      
+
+Number of records: 29
+
+>>> help dummy;
+Relation name: dummy (4 attributes)
+  Attribute name   Off   T   Len   I
+
+               s     0   i     4
+               d     4   s    20
+               f    24   s    12
+               g    36   i     4
+
+>>> Enter y if you want to delete testdb/*
+Executing rm -r testdb

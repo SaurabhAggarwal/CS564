@@ -33,23 +33,24 @@ const Status UT_Load(const string & relation, const string & fileName)
     return UNIXERR;
 
   // get relation data
-
-
-
+	if((status = relCat->getInfo(relation, rd)) != OK) return status;
+	
+	if((status = attrCat->getRelInfo(relation, attrCnt, attrs)) != OK) return status;
+	for(i = 0; i < attrCnt; i++)
+	{
+		width += attrs[i].attrLen;
+	}
 
   // start insertFileScan on relation
-
-
-
-
-
+	iFile = new InsertFileScan(relation, status);
+	if (status != OK) return status;
 
 
 
   // allocate buffer to hold record read from unix file
   char *record;
   if (!(record = new char [width])) return INSUFMEM;
-
+  
   int nbytes;
   Record rec;
 
@@ -63,10 +64,8 @@ const Status UT_Load(const string & relation, const string & fileName)
   }
 
   // close heap file and unix file
+  delete iFile;
   if (close(fd) < 0) return UNIXERR;
-
-
-
-
 }
+
 

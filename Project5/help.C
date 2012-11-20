@@ -25,16 +25,39 @@ using namespace std;
 // 	error code otherwise
 //
 
+#ifdef DEBUG
 const Status RelCatalog::help(const string & relation)
 {
   Status status;
   RelDesc rd;
   AttrDesc *attrs;
-  int attrCnt;
+
+  int attrCnt, i;
 
   if (relation.empty()) return UT_Print(RELCATNAME);
 
-
-
-  return OK;
+	if ((status = relCat->getInfo(relation, rd)) != OK) return status;
+	
+	if ((status = attrCat->getRelInfo(relation, attrCnt, attrs)) != OK) return status;
+	
+	printf("\n");
+	printf("%-20s%-12s%-12s%-12s\n", "attrName", "attrType", "attrOffset", "attrLen");
+	printf("%-20s%-12s%-12s%-12s\n", "-------------------", "-----------", "-----------", "-----------");
+	for (i = 0; i < attrCnt; i++)
+	{ 
+		char type[20];
+		switch(attrs[i].attrType)
+		{
+			case 0: strcpy(type, "string"); break;
+			case 1: strcpy(type, "int"); break;
+			case 2: strcpy(type, "float"); break;
+		}
+		printf("%-20s%-12s%-12d%-12d\n", attrs[i].attrName, type, attrs[i].attrOffset, attrs[i].attrLen);
+	}
+	
+	delete []attrs;
+	
+	return OK;
 }
+#endif
+

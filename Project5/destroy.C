@@ -20,10 +20,14 @@ const Status RelCatalog::destroyRel(const string & relation)
       relation == string(ATTRCATNAME))
     return BADCATPARM;
 
-
-
-
-
+	// Remove coresppnding entry from 'attrCnt' table
+	if((status = attrCat->dropRelation(relation)) != OK) return status;
+	// Remove coresppnding entry from 'relcat' table
+	if((status = removeInfo(relation)) != OK) return status;
+	
+		// Destroy the 'relation' file
+	status = destroyHeapFile(relation);
+	return status;
 }
 
 
@@ -45,10 +49,15 @@ const Status AttrCatalog::dropRelation(const string & relation)
 
   if (relation.empty()) return BADCATPARM;
 
+	if((status = attrCat->getRelInfo(relation, attrCnt, attrs)) != OK) return status;
+	for (i = 0; i < attrCnt; i++)
+	{ 
+		if((status = attrCat->removeInfo(relation, attrs[i].attrName)) != OK) return status;
+	}
 
-
-
-
+	delete []attrs;
+	return status;
 }
+
 
 

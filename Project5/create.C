@@ -1,6 +1,27 @@
 #include "catalog.h"
 
 
+/**
+ * FUNCTION: RelCatalog::createRel
+ *
+ * PURPOSE:  Creates a new relation in current database
+ *
+ * PARAMETERS:
+ *		relation 	(in)		Relation name to be created
+ *		attrCnt		(in)		Number of attributes in the relation
+ *		attrList	(in)		Information of all the attributes
+ *	
+ * RETURN VALUES:
+ * 		Status	OK 				Relation successfully created.
+ *				BADCATPARM 		Relation name is empty
+ *				NAMETOOLONG		Relation name too long
+ *				RELEXISTS	  	A relation with the same name already exists
+ *				FILEEOF 		Reached the end of file while scanning for the record
+ *				BUFFEREXCEEDED  All buffer frames are pinned
+ *				HASHTBLERROR	Hash table error occurred
+ *				PAGENOTPINNED 	Pin count is already 0
+ *				HASHNOTFOUND  	Page is not in the buffer pool hash table
+ **/
 const Status RelCatalog::createRel(const string & relation, 
 				   const int attrCnt,
 				   const attrInfo attrList[])

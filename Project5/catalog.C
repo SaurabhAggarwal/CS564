@@ -7,7 +7,25 @@ RelCatalog::RelCatalog(Status &status) :
 // nothing should be needed here
 }
 
-
+/**
+ * FUNCTION: RelCatalog::getInfo
+ *
+ * PURPOSE:  To get information about a particular relation.
+ *
+ * PARAMETERS:
+ *		relation 	(in)		Relation name whose information is to be returned
+ *		record		(out)		Record object corresponding to the information about the relation
+ *	
+ * RETURN VALUES:
+ * 		Status	OK 				Relation information successfully found and returned.
+ *				BADCATPARM 		Relation name is empty
+ *				BADSCANPARM  	Error in allocating page: All buffer frames are pinned
+ *				FILEEOF 		Reached the end of file while scanning for the record
+ *				BUFFEREXCEEDED  All buffer frames are pinned
+ *				HASHTBLERROR	Hash table error occurred
+ *				PAGENOTPINNED 	Pin count is already 0
+ *				HASHNOTFOUND  	Page is not in the buffer pool hash table
+ **/
 const Status RelCatalog::getInfo(const string & relation, RelDesc &record)
 {
   	if (relation.empty())
@@ -25,7 +43,6 @@ const Status RelCatalog::getInfo(const string & relation, RelDesc &record)
 	}
 	if ((status = hfs->startScan(0, 32, STRING, relation.c_str(), EQ)) != OK) return status;
 
-	//while ((status = ((HeapFileScan*)this)->scanNext(rid)) != FILEEOF)
 	while ((status = hfs->scanNext(rid)) != FILEEOF)
   	{
  		if (status == OK)
@@ -41,15 +58,29 @@ const Status RelCatalog::getInfo(const string & relation, RelDesc &record)
 
 	// Close scan and data file
   	hfs->endScan();
-  	//if ((status = hfs->endScan()) != OK)
-  	//  return status;
- 	delete hfs;
+  	
+  	delete hfs;
 	
 	if(status != OK) status = RELNOTFOUND;
 	return status;
 }
 
-
+/**
+ * FUNCTION: RelCatalog::addInfo
+ *
+ * PURPOSE:  To add information about a new relation created.
+ *
+ * PARAMETERS:
+ *		record 		(in)		Record information to be added.
+ *	
+ * RETURN VALUES:
+ * 		Status	OK 				Record successfully added.
+ *				UNIXERR 		Error in allocating page: Unix error occurred
+ *				BUFFEREXCEEDED  Error in allocating page: All buffer frames are pinned
+ *				HASHTBLERROR	Error in allocating page: Hash table error occurred
+ *				PAGENOTPINNED 	Error in unpinning page: Pin count is already 0
+ *				HASHNOTFOUND  	Error in unpinning page: Page is not in the buffer pool hash table
+ **/
 const Status RelCatalog::addInfo(RelDesc & record)
 {
   RID rid;
@@ -69,6 +100,24 @@ const Status RelCatalog::addInfo(RelDesc & record)
 	return status;
 }
 
+/**
+ * FUNCTION: RelCatalog::removeInfo
+ *
+ * PURPOSE:  To remove information about a relation from relation catalog.
+ *
+ * PARAMETERS:
+ *		relation 	(in)		Name of the relation whose information is to be removed.
+ *	
+ * RETURN VALUES:
+ * 		Status	OK 				Relation information successfully removed
+ *				BADCATPARM 		Relation name is empty
+ *				UNIXERR 		Error in allocating page: Unix error occurred
+ *				BADSCANPARM  	Error in allocating page: All buffer frames are pinned
+ *				FILEEOF 		Reached the end of file while scanning for the record
+ *				HASHTBLERROR	Hash table error occurred
+ *				PAGENOTPINNED 	Pin count is already 0
+ *				HASHNOTFOUND  	Page is not in the buffer pool hash table
+ **/
 const Status RelCatalog::removeInfo(const string & relation)
 {
 	Status status;
@@ -96,8 +145,7 @@ const Status RelCatalog::removeInfo(const string & relation)
 
 	// Close scan and data file
   	hfs->endScan();
-  	//if ((status = hfs->endScan()) != OK)
-  	//  return status;
+  	
   	delete hfs;
 	
 	return status;
@@ -117,6 +165,26 @@ AttrCatalog::AttrCatalog(Status &status) :
 }
 
 
+/**
+ * FUNCTION: AttrCatalog::getInfo
+ *
+ * PURPOSE:  To get information about a particular attribute of a particular relation.
+ *
+ * PARAMETERS:
+ *		relation 	(in)	Name of the relation
+ *		attrName	(in)	Name of the attribute in the relation whose information is to be returned
+ *		record		(out)	Information about the attribute of the relation
+ *	
+ * RETURN VALUES:
+ * 		Status	OK 				Attribute information successfully found and returned
+ *				BADCATPARM 		Relation name is empty
+ *				RELNOTFOUND		Relation was not found
+ *				UNIXERR 		Error in allocating page: Unix error occurred
+ *				FILEEOF 		Reached the end of file while scanning for the record
+ *				HASHTBLERROR	Hash table error occurred
+ *				PAGENOTPINNED 	Pin count is already 0
+ *				HASHNOTFOUND  	Page is not in the buffer pool hash table
+ **/
 const Status AttrCatalog::getInfo(const string & relation, 
 				  const string & attrName,
 				  AttrDesc &record)
@@ -147,15 +215,31 @@ const Status AttrCatalog::getInfo(const string & relation,
 		}
 	}
 	
-	// Close scan and data file
-  if ((status = hfs->endScan()) != OK)
-    return status;
-  delete hfs;
-
+	//Close scan and data file
+  	if((status = hfs->endScan()) != OK)
+    	return status;
+  	delete hfs;
+	
 	return status;
 }
 
 
+/**
+ * FUNCTION: AttrCatalog::addInfo
+ *
+ * PURPOSE:  To add information about a particular attribute of a particular relation.
+ *
+ * PARAMETERS:
+ *		record 		(in)		Attribute description of a particular attribute of a relation.
+ *	
+ * RETURN VALUES:
+ * 		Status	OK 				Attribute information successfully added
+ *				UNIXERR 		Error in allocating page: Unix error occurred
+ *				BUFFEREXCEEDED  Error in allocating page: All buffer frames are pinned
+ *				HASHTBLERROR	Error in allocating page: Hash table error occurred
+ *				PAGENOTPINNED 	Error in unpinning page: Pin count is already 0
+ *				HASHNOTFOUND  	Error in unpinning page: Page is not in the buffer pool hash table
+ **/
 const Status AttrCatalog::addInfo(AttrDesc & record)
 {
   RID rid;
@@ -179,6 +263,22 @@ const Status AttrCatalog::addInfo(AttrDesc & record)
 }
 
 
+/**
+ * FUNCTION: AttrCatalog::removeInfo
+ *
+ * PURPOSE:  To remove information about a particular attribute of a particular relation.
+ *
+ * PARAMETERS:
+ *		relation 	(in)	Name of the relation whose attribute's information is to be removed
+ *		attrName	(in)	Name of the attribute whose information is to be removed
+ *	
+ * RETURN VALUES:
+ * 		Status	OK 				Attribute information successfully removed
+ *				FILEEOF 		Reached the end of file while scanning for the record
+ *				HASHTBLERROR	Hash table error occurred
+ *				PAGENOTPINNED 	Pin count is already 0
+ *				HASHNOTFOUND  	Page is not in the buffer pool hash table
+ **/
 const Status AttrCatalog::removeInfo(const string & relation, 
 			       const string & attrName)
 {
@@ -215,17 +315,34 @@ const Status AttrCatalog::removeInfo(const string & relation,
 	
 	if(tempStatus == OK) status = OK;
 	
-  // Close scan and data file
-  status = hfs->endScan();
-//  if ((status = hfs->endScan()) != OK)
-//    return status;
-  delete hfs;
-
-
+  	status = hfs->endScan();
+	
+	delete hfs;
+	
 	return status;
 }
 
 
+/**
+ * FUNCTION: AttrCatalog::getRelInfo
+ *
+ * PURPOSE:  Returns (by reference) descriptors for all attributes of the relation.
+ *
+ * PARAMETERS:
+ *		relation	(in)		Name of the relation whose descriptors are to be returned
+ *		attrCnt		(in)		Number of attributes in the relation
+ *		attrs 		(out)		File name for the heap file
+ *	
+ * RETURN VALUES:
+ * 		Status	OK 				Descriptors of all attributes successfully returned.
+ *				BADCATPARM 		Relation name is empty
+ *				RELNOTFOUND		Relation was not found
+ *				UNIXERR 		Error in allocating page: Unix error occurred
+ *				FILEEOF 		Reached the end of file while scanning for the record
+ *				HASHTBLERROR	Hash table error occurred
+ *				PAGENOTPINNED 	Pin count is already 0
+ *				HASHNOTFOUND  	Page is not in the buffer pool hash table
+ **/
 const Status AttrCatalog::getRelInfo(const string & relation, 
 				     int &attrCnt,
 				     AttrDesc *&attrs)
@@ -251,16 +368,14 @@ const Status AttrCatalog::getRelInfo(const string & relation,
 			{ delete hfs; return status;}
 			
 			memcpy(&relRec, rec.data, rec.length);
-			//if(strcmp(relRec.relName, relation.c_str()) == 0)
-			//{
-				attrCnt = relRec.attrCnt;
-				break;
-			//}
+			attrCnt = relRec.attrCnt;
+			break;
 		}
 	}
 	attrs = new AttrDesc[attrCnt];
 
 	HeapFileScan*  newhfs = new HeapFileScan(ATTRCATNAME, status);
+	
 	// Scan again
 	int i = 0;
 	if ((status = newhfs->startScan(0, 32, STRING, relation.c_str(), EQ)) != OK) return status;
@@ -284,14 +399,15 @@ const Status AttrCatalog::getRelInfo(const string & relation,
 	if(tempStatus == OK) status = OK;
 
 	// Close scan and data file
-		hfs->endScan();
-		newhfs->endScan();
-//  if ((status = hfs->endScan()) != OK)
-//    return status;
-  delete hfs;
-  delete newhfs;
+	hfs->endScan();
+	newhfs->endScan();
+  	
+  	delete hfs;
+  	delete newhfs;
+	
 	if(status != OK)
 		status = RELNOTFOUND;
+	
 	return status;
 }
 
@@ -300,5 +416,3 @@ AttrCatalog::~AttrCatalog()
 {
 // nothing should be needed here
 }
-
-
